@@ -1,0 +1,91 @@
+{
+	"folders": [
+		{
+			"name": "Claude Code Wrapper",
+			"path": "./wrapper"
+		},
+		{
+			"name": "AutoGen Integration",
+			"path": "./autogen"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/__pycache__": true,
+			"**/*.pyc": true,
+			"**/.pytest_cache": true,
+			"**/.coverage": true,
+			"**/htmlcov": true,
+			"**/*.egg-info": true
+		},
+		"python.defaultInterpreterPath": "${workspaceFolder:Claude Code Wrapper}/.venv/bin/python",
+		"python.terminal.activateEnvironment": true,
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": false,
+		"python.linting.flake8Enabled": false,
+		"python.formatting.provider": "black",
+		"[python]": {
+			"editor.formatOnSave": true,
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": "explicit"
+			}
+		},
+		"files.associations": {
+			"*.md": "markdown",
+			"requirements*.txt": "pip-requirements"
+		},
+		"search.exclude": {
+			"**/poetry.lock": true,
+			"**/.venv": true,
+			"**/venv": true,
+			"**/logs": true
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-python.vscode-pylance",
+			"ms-python.black-formatter",
+			"redhat.vscode-yaml",
+			"esbenp.prettier-vscode"
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Run Wrapper Server",
+				"type": "python",
+				"request": "launch",
+				"module": "uvicorn",
+				"args": [
+					"main:app",
+					"--host",
+					"0.0.0.0",
+					"--port",
+					"8000",
+					"--reload"
+				],
+				"cwd": "${workspaceFolder:Claude Code Wrapper}",
+				"console": "integratedTerminal",
+				"justMyCode": false
+			},
+			{
+				"name": "Run AutoGen Quickstart",
+				"type": "python",
+				"request": "launch",
+				"program": "${workspaceFolder:AutoGen Integration}/quickstart.py",
+				"console": "integratedTerminal",
+				"justMyCode": false
+			},
+			{
+				"name": "Debug Current Python File",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal",
+				"justMyCode": false
+			}
+		]
+	}
+}
