@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "component_type": "workflow",
+  "name": "Software Testing Workflow",
+  "description": "A comprehensive workflow for software testing tasks",
+  "team": {
+    "component_type": "team",
+    "team_type": "RoundRobinGroupChat",
+    "participants": [
+      {
+        "component_type": "agent",
+        "agent_type": "AssistantAgent",
+        "name": "requirements_analyst",
+        "description": "Analyzes requirements and creates test specifications",
+        "model_client": {
+          "component_type": "model",
+          "model_type": "OpenAIChatCompletionClient",
+          "model": "claude-opus-4-20250514",
+          "base_url": "http://localhost:8000/v1",
+          "temperature": 0.3
+        },
+        "system_message": "You are a requirements analyst. Extract testable requirements and create detailed test specifications.",
+        "tools": []
+      },
+      {
+        "component_type": "agent",
+        "agent_type": "AssistantAgent",
+        "name": "test_engineer",
+        "description": "Implements and executes test cases",
+        "model_client": {
+          "component_type": "model",
+          "model_type": "OpenAIChatCompletionClient",
+          "model": "claude-opus-4-20250514",
+          "base_url": "http://localhost:8000/v1",
+          "temperature": 0.5
+        },
+        "system_message": "You are a test engineer. Implement comprehensive test cases based on specifications.",
+        "tools": []
+      }
+    ],
+    "termination_condition": {
+      "component_type": "termination",
+      "termination_type": "MaxMessageTermination",
+      "max_messages": 10
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "component_type": "team",
+  "team_type": "RoundRobinGroupChat",
+  "name": "Test Development Team",
+  "description": "A team of agents for testing and development tasks",
+  "participants": [
+    {
+      "component_type": "agent",
+      "agent_type": "AssistantAgent",
+      "name": "test_architect",
+      "description": "A test architect agent that plans and designs test strategies",
+      "model_client": {
+        "component_type": "model",
+        "model_type": "OpenAIChatCompletionClient",
+        "model": "claude-opus-4-20250514",
+        "base_url": "http://localhost:8000/v1",
+        "temperature": 0.7
+      },
+      "system_message": "You are a test architect specializing in software testing strategies. Your role is to:\n1. Analyze testing requirements\n2. Design comprehensive test plans\n3. Identify edge cases and potential issues\n4. Recommend appropriate testing frameworks and tools\n5. Ensure test coverage across unit, integration, and end-to-end tests\n\nAlways consider both functional and non-functional requirements.",
+      "tools": []
+    },
+    {
+      "component_type": "agent",
+      "agent_type": "AssistantAgent",
+      "name": "test_developer",
+      "description": "A test developer agent that implements and executes tests",
+      "model_client": {
+        "component_type": "model",
+        "model_type": "OpenAIChatCompletionClient",
+        "model": "claude-opus-4-20250514",
+        "base_url": "http://localhost:8000/v1",
+        "temperature": 0.3
+      },
+      "system_message": "You are a test developer focused on implementing high-quality tests. Your responsibilities include:\n1. Writing clean, maintainable test code\n2. Implementing unit tests with proper mocking\n3. Creating integration tests for API endpoints\n4. Developing end-to-end tests for user workflows\n5. Following best practices like AAA (Arrange-Act-Assert) pattern\n\nAlways ensure tests are deterministic and independent.",
+      "tools": []
+    },
+    {
+      "component_type": "agent",
+      "agent_type": "AssistantAgent",
+      "name": "test_reviewer",
+      "description": "A test reviewer agent that validates and improves test quality",
+      "model_client": {
+        "component_type": "model",
+        "model_type": "OpenAIChatCompletionClient",
+        "model": "claude-opus-4-20250514",
+        "base_url": "http://localhost:8000/v1",
+        "temperature": 0.5
+      },
+      "system_message": "You are a test reviewer ensuring test quality and coverage. Your tasks are to:\n1. Review test code for completeness and correctness\n2. Verify edge cases are covered\n3. Check for proper error handling in tests\n4. Ensure tests follow established patterns and conventions\n5. Provide constructive feedback for improvements\n\nRespond with 'APPROVED' when the test suite meets all quality standards.",
+      "tools": []
+    }
+  ],
+  "termination_condition": {
+    "component_type": "termination",
+    "termination_type": "CombinationTermination",
+    "operator": "or",
+    "conditions": [
+      {
+        "component_type": "termination",
+        "termination_type": "TextMentionTermination",
+        "text": "APPROVED"
+      },
+      {
+        "component_type": "termination",
+        "termination_type": "MaxMessageTermination",
+        "max_messages": 15
+      }
+    ]
+  }
+}

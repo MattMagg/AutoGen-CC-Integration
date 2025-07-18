@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "skills": [
+    {
+      "name": "calculate_test_coverage",
+      "description": "Calculate test coverage percentage based on lines covered",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "total_lines": {
+            "type": "integer",
+            "description": "Total number of lines in the codebase"
+          },
+          "covered_lines": {
+            "type": "integer",
+            "description": "Number of lines covered by tests"
+          }
+        },
+        "required": ["total_lines", "covered_lines"]
+      },
+      "code": "def calculate_test_coverage(total_lines: int, covered_lines: int) -> str:\n    if total_lines == 0:\n        return 'No code to test'\n    coverage = (covered_lines / total_lines) * 100\n    return f'Test coverage: {coverage:.1f}% ({covered_lines}/{total_lines} lines)'"
+    },
+    {
+      "name": "generate_test_report",
+      "description": "Generate a formatted test execution report",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "passed": {
+            "type": "integer",
+            "description": "Number of tests passed"
+          },
+          "failed": {
+            "type": "integer",
+            "description": "Number of tests failed"
+          },
+          "skipped": {
+            "type": "integer",
+            "description": "Number of tests skipped"
+          }
+        },
+        "required": ["passed", "failed", "skipped"]
+      },
+      "code": "def generate_test_report(passed: int, failed: int, skipped: int) -> str:\n    total = passed + failed + skipped\n    success_rate = (passed / total * 100) if total > 0 else 0\n    status = '✅ PASSED' if failed == 0 else '❌ FAILED'\n    return f'''Test Report {status}\n{'='*30}\nTotal Tests: {total}\nPassed: {passed} ({passed/total*100:.1f}%)\nFailed: {failed}\nSkipped: {skipped}\nSuccess Rate: {success_rate:.1f}%'''"
+    }
+  ]
+}

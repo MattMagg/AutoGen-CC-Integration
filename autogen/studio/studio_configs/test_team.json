@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "team": {
+    "name": "Testing Team",
+    "description": "Comprehensive testing team",
+    "participants": [
+      "test_architect",
+      "test_developer"
+    ],
+    "type": "round_robin",
+    "max_rounds": 10
+  }
+}

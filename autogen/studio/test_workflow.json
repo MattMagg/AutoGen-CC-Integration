@@ -1,0 +1,58 @@
+{
+  "name": "Test Development Workflow",
+  "description": "A workflow for comprehensive software testing",
+  "sender": {
+    "type": "userproxy",
+    "name": "user_proxy",
+    "human_input_mode": "NEVER",
+    "max_consecutive_auto_reply": 10,
+    "system_message": "You are a helpful assistant.",
+    "llm_config": false,
+    "code_execution_config": false
+  },
+  "receiver": {
+    "type": "groupchat",
+    "name": "test_team",
+    "description": "Testing team for software QA",
+    "agents": [
+      {
+        "type": "assistant",
+        "name": "test_architect",
+        "system_message": "You are a test architect specializing in software testing strategies. Your role is to:\n1. Analyze testing requirements\n2. Design comprehensive test plans\n3. Identify edge cases and potential issues\n4. Recommend appropriate testing frameworks and tools\n5. Ensure test coverage across unit, integration, and end-to-end tests\n\nAlways consider both functional and non-functional requirements.",
+        "llm_config": {
+          "model": "claude-opus-4-20250514",
+          "api_type": "openai",
+          "base_url": "http://localhost:8000/v1",
+          "api_key": "not-needed"
+        }
+      },
+      {
+        "type": "assistant",
+        "name": "test_developer",
+        "system_message": "You are a test developer focused on implementing high-quality tests. Your responsibilities include:\n1. Writing clean, maintainable test code\n2. Implementing unit tests with proper mocking\n3. Creating integration tests for API endpoints\n4. Developing end-to-end tests for user workflows\n5. Following best practices like AAA (Arrange-Act-Assert) pattern\n\nAlways ensure tests are deterministic and independent.",
+        "llm_config": {
+          "model": "claude-opus-4-20250514",
+          "api_type": "openai",
+          "base_url": "http://localhost:8000/v1",
+          "api_key": "not-needed"
+        }
+      },
+      {
+        "type": "assistant",
+        "name": "test_reviewer",
+        "system_message": "You are a test reviewer ensuring test quality and coverage. Your tasks are to:\n1. Review test code for completeness and correctness\n2. Verify edge cases are covered\n3. Check for proper error handling in tests\n4. Ensure tests follow established patterns and conventions\n5. Provide constructive feedback for improvements\n\nRespond with 'APPROVED' when the test suite meets all quality standards.",
+        "llm_config": {
+          "model": "claude-opus-4-20250514",
+          "api_type": "openai",
+          "base_url": "http://localhost:8000/v1",
+          "api_key": "not-needed"
+        }
+      }
+    ],
+    "admin_name": "Admin",
+    "messages": [],
+    "max_round": 15,
+    "speaker_selection_method": "round_robin",
+    "allow_repeat_speaker": true
+  }
+}
