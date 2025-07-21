@@ -8,8 +8,7 @@ import asyncio
 import json
 import requests
 from pathlib import Path
-from autogenstudio.database import DatabaseManager
-from autogenstudio.datamodel import Agent, Model, Tool, Team
+import sqlite3
 
 # AutoGen Studio API endpoint
 STUDIO_API_BASE = "http://localhost:8080/api"
@@ -114,58 +113,88 @@ def register_team(team_config, agent_ids):
         return None
 
 def use_database_direct():
-    """Alternative: Register directly in the database"""
+    """Alternative: Register directly in the database using SQL"""
     print("\n🔧 Using direct database registration...")
     
-    # Initialize database
-    db = DatabaseManager(
-        engine_uri="sqlite:///autogen04202.db",
-        base_dir=str(Path(__file__).parent)
-    )
+    db_path = Path(__file__).parent / "autogen04202.db"
     
-    # Create model
-    model = Model(
-        name="Claude Opus Wrapper",
-        model="claude-opus-4-20250514",
-        api_type="openai",
-        base_url="http://localhost:8000/v1",
-        description="Claude Opus via local wrapper"
-    )
+    try:
+        # Connect to SQLite database
+        conn = sqlite3.connect(str(db_path))
+        cursor = conn.cursor()
+        
+        # Check if VS Code test agent already exists by examining config JSON
+        cursor.execute("SELECT id, config FROM gallery")
+        existing_entries = cursor.fetchall()
+        
+        for entry_id, config_json in existing_entries:
+            try:
+                config = json.loads(config_json)
+                if config.get("name") == "VS_Code_Test_Agent":
+                    print("✓ VS Code Test Agent already exists in database")
+                    return entry_id
+            except:
+                continue
+        
+        # Insert VS Code test agent into gallery table
+        agent_config = {
+            "name": "VS_Code_Test_Agent",
+            "description": "Test agent created programmatically in VS Code environment",
+            "system_message": "I am a test agent created programmatically in VS Code",
+            "model": "claude-opus-4-20250514",
+            "base_url": "http://localhost:8000/v1",
+            "api_type": "openai",
+            "temperature": 0.7,
+            "max_tokens": 4096,
+            "type": "AssistantAgent"
+        }
+        
+        # Create gallery entry
+        cursor.execute("""
+            INSERT INTO gallery (config, created_at, updated_at, user_id, version)
+            VALUES (?, datetime('now'), datetime('now'), ?, ?)
+        """, (
+            json.dumps(agent_config),
+            "user",  # user_id
+            "1.0"    # version
+        ))
+        
+        agent_id = cursor.lastrowid
+        conn.commit()
+        
+        print(f"✅ VS Code Test Agent registered in database (ID: {agent_id})")
+        
+        # Verify insertion
+        cursor.execute("SELECT config FROM gallery WHERE id = ?", (agent_id,))
+        result = cursor.fetchone()
+        if result:
+            config = json.loads(result[0])
+            print(f"✓ Verified: {config.get('name')} ({config.get('type')}) in database")
+        
+        conn.close()
+        return agent_id
+        
+    except Exception as e:
+        print(f"❌ Database registration failed: {e}")
+        if 'conn' in locals():
+            conn.close()
+        return None
+
+def register_test_agent(model_id):
+    """Register the VS Code test agent"""
+    test_agent_config = {
+        "name": "VS_Code_Test_Agent",
+        "description": "Test agent created programmatically in VS Code environment",
+        "system_message": "I am a test agent created programmatically in VS Code",
+        "model_client": {
+            "model": "claude-opus-4-20250514",
+            "temperature": 0.7,
+            "max_tokens": 4096
+        }
+    }
     
-    # Create agents from our configs
-    agents = []
-    
-    # Load individual agent config
-    agent_config_path = Path(__file__).parent / "configs" / "test_agent_config.json"
-    if agent_config_path.exists():
-        with open(agent_config_path, 'r') as f:
-            config = json.load(f)
-            agent = Agent(
-                name=config["name"],
-                description=config["description"],
-                system_message=config["system_message"],
-                type="assistant",
-                model_id=model.id
-            )
-            agents.append(agent)
-    
-    # Load team config
-    team_config_path = Path(__file__).parent / "team.json"
-    if team_config_path.exists():
-        with open(team_config_path, 'r') as f:
-            team_config = json.load(f)
-            for participant in team_config["participants"]:
-                agent = Agent(
-                    name=participant["name"],
-                    description=participant["description"],
-                    system_message=participant["system_message"],
-                    type="assistant",
-                    model_id=model.id
-                )
-                agents.append(agent)
-    
-    print(f"✅ Created {len(agents)} agents in database")
-    return model, agents
+    return register_agent(test_agent_config, model_id)
+
 
 def main():
     """Main registration function"""
@@ -198,6 +227,13 @@ def main():
         # Register agents
         agent_ids = []
         
+        # Register VS Code test agent
+        print("\n🤖 Registering VS Code Test Agent...")
+        test_agent_id = register_test_agent(model_id)
+        if test_agent_id:
+            agent_ids.append(test_agent_id)
+            print("✅ VS Code Test Agent registered successfully")
+        
         # Load and register team agents
         team_path = Path(__file__).parent / "team.json"
         if team_path.exists():
@@ -222,6 +258,7 @@ def main():
     print("2. Check the Component Library in Team Builder")
     print("3. Your agents should now appear!")
     print("4. If not visible, restart AutoGen Studio")
+    print("5. VS Code Test Agent should be available for testing")
 
 if __name__ == "__main__":
     main()
