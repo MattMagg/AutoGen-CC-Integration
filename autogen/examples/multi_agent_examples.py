@@ -13,6 +13,7 @@ from typing import List, Sequence
 sys.path.append(str(Path(__file__).parent.parent))
 
 from autogen_agentchat.agents import AssistantAgent
+from autogen_core import CancellationToken
 from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
 from autogen_agentchat.messages import TextMessage, StopMessage
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
@@ -85,7 +86,7 @@ async def sequential_chat_example():
         print("Step 1: Researching...")
         research_response = await researcher.on_messages([
             TextMessage(content=f"Research the following topic: {topic}", source="user")
-        ])
+        ], CancellationToken())
         research_content = research_response.chat_message.content
         print(f"\nResearch Output:\n{research_content[:500]}...\n")
         
@@ -93,10 +94,12 @@ async def sequential_chat_example():
         print("Step 2: Analyzing...")
         analysis_response = await analyst.on_messages([
             TextMessage(
-                content=f"Analyze the following research findings:\n\n{research_content}",
+                content=f"""Analyze the following research findings:
+
+{research_content}""",
                 source="researcher"
             )
-        ])
+        ], CancellationToken())
         analysis_content = analysis_response.chat_message.content
         print(f"\nAnalysis Output:\n{analysis_content[:500]}...\n")
         
@@ -104,10 +107,12 @@ async def sequential_chat_example():
         print("Step 3: Writing Report...")
         report_response = await writer.on_messages([
             TextMessage(
-                content=f"Write a professional report based on this analysis:\n\n{analysis_content}",
+                content=f"""Write a professional report based on this analysis:
+
+{analysis_content}""",
                 source="analyst"
             )
-        ])
+        ], CancellationToken())
         report_content = report_response.chat_message.content
         print(f"\nFinal Report:\n{report_content[:800]}...\n")
         
@@ -373,7 +378,7 @@ async def nested_chat_example():
         print("Coordinator analyzing requirements...\n")
         coord_response = await coordinator.on_messages([
             TextMessage(content=project_request, source="client")
-        ])
+        ], CancellationToken())
         print(f"Coordinator: {coord_response.chat_message.content[:400]}...\n")
         
         # Frontend team discussion (nested)
@@ -383,14 +388,14 @@ async def nested_chat_example():
         # Simulate frontend sub-team discussion
         frontend_lead_response = await frontend_lead.on_messages([
             TextMessage(content=frontend_task, source="coordinator")
-        ])
+        ], CancellationToken())
         
         frontend_dev_response = await frontend_dev.on_messages([
             TextMessage(
                 content=f"Based on the lead's plan: {frontend_lead_response.chat_message.content[:200]}... What specific technologies should we use?",
                 source="frontend_lead"
             )
-        ])
+        ], CancellationToken())
         
         print(f"Frontend Lead: {frontend_lead_response.chat_message.content[:300]}...")
         print(f"Frontend Dev: {frontend_dev_response.chat_message.content[:300]}...\n")
@@ -402,14 +407,14 @@ async def nested_chat_example():
         # Simulate backend sub-team discussion
         backend_lead_response = await backend_lead.on_messages([
             TextMessage(content=backend_task, source="coordinator")
-        ])
+        ], CancellationToken())
         
         backend_dev_response = await backend_dev.on_messages([
             TextMessage(
                 content=f"Based on the architecture: {backend_lead_response.chat_message.content[:200]}... How should we implement the WebSocket layer?",
                 source="backend_lead"
             )
-        ])
+        ], CancellationToken())
         
         print(f"Backend Lead: {backend_lead_response.chat_message.content[:300]}...")
         print(f"Backend Dev: {backend_dev_response.chat_message.content[:300]}...\n")
@@ -425,7 +430,7 @@ async def nested_chat_example():
                 Please create a unified implementation plan.""",
                 source="teams"
             )
-        ])
+        ], CancellationToken())
         
         print(f"Final Plan:\n{final_summary.chat_message.content[:600]}...")
         

@@ -1,0 +1,38 @@
+{
+  "version": "0.0.1",
+  "teams": [
+    {
+      "name": "Sequential Research Team",
+      "description": "Research → Analysis → Report Writing pipeline",
+      "participants": ["researcher", "analyst", "writer"],
+      "type": "sequential",
+      "max_rounds": 3
+    },
+    {
+      "name": "Product Brainstorming Team",
+      "description": "Cross-functional team for product ideation",
+      "participants": ["product_manager", "engineer", "designer", "data_scientist"],
+      "type": "round_robin",
+      "max_rounds": 12
+    },
+    {
+      "name": "Development Team",
+      "description": "Software development team with dynamic task assignment",
+      "participants": ["project_lead", "backend_dev", "frontend_dev", "qa_engineer"],
+      "type": "selector",
+      "max_rounds": 10,
+      "selector_config": {
+        "model": "claude-opus-4-20250514",
+        "base_url": "http://localhost:8000/v1",
+        "system_message": "You are a team coordinator. Select the most appropriate team member for each task."
+      }
+    },
+    {
+      "name": "Full Stack Team",
+      "description": "Complete development team with all roles",
+      "participants": ["product_manager", "engineer", "designer", "data_scientist", "project_lead", "backend_dev", "frontend_dev", "qa_engineer"],
+      "type": "round_robin",
+      "max_rounds": 15
+    }
+  ]
+}
